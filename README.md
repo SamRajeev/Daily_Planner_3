@@ -1,10 +1,11 @@
 # Daily Planner
 
-Helps you to plan your day with ease. You can shedule your events and it reminds you so that you don't miss it.
+Helps you to plan your day with ease. You can schedule your events and it reminds you so that you don't miss it.
 
 ## How can you use it ?
 
 First make sure you have the applications given in the requirements.txt
+
 Download and start the project.
 
 ## How it works ?
