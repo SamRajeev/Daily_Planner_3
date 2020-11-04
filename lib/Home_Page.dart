@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,15 +14,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _openDrawer() {
-    _scaffoldKey.currentState.openDrawer();
-  }
-
-  void _closeDrawer() {
-    Navigator.of(context).pop();
-  }
-
-  String HelpText = " ";
+  String helpText = " ";
+  String AboutText = " ";
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +35,10 @@ class _HomeState extends State<Home> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children:<Widget>[
+                  Container(
+                    child: Image(image: AssetImage('Assets/DP_Logo.jpg'),width: 80.0,),)
+                  ,
+                  SizedBox(width: 10.0),
                   Text(
                     "Daily ",
                     style: TextStyle(
@@ -52,12 +50,13 @@ class _HomeState extends State<Home> {
               ),
             ),
             Text(
-              "        Planner",
+              "            Planner",
               style: TextStyle(
                   fontSize: 45.0,
                   fontWeight: FontWeight.bold
               ),
-            ), Padding(
+            ),
+            Padding(
               padding: const EdgeInsets.fromLTRB(0.0, 18.0, 0.0, 0.0),
               child: Text(
                'Swipe down to reload',
@@ -95,10 +94,17 @@ class _HomeState extends State<Home> {
                   child: ListTile(
                     leading: Icon(Icons.info),
                     title: Text("About"),
-                    onTap: (){HelpTextContent();},
+                    onTap: (){helpTextContent2();},
                   ),
                   color: Colors.white,
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(AboutText,style: TextStyle(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold
+                ),),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -106,12 +112,18 @@ class _HomeState extends State<Home> {
                   child: ListTile(
                     leading: Icon(Icons.info),
                     title: Text("Help"),
-                    onTap: (){HelpTextContent();},
+                    onTap: (){helpTextContent();},
                   ),
                   color: Colors.white,
                 ),
               ),
-              Text(HelpText)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(helpText,style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0
+                ),),
+              )
 
             ],
           ),
@@ -122,13 +134,23 @@ class _HomeState extends State<Home> {
     );
 
   }
-  HelpTextContent(){
+  helpTextContent(){
     setState(() {
-      HelpText = "Thanks for using Help\n"
+      helpText = "Daily Planner main screen will list all the events scheduled for the day. It's notification feature generates alerts for events based on the time.\n"
 
           ;
 
     });
+  }
+
+  helpTextContent2() {
+    setState(() {
+      AboutText = "Daily Planner has been developed as part of the 2nd Timathon  CodeJam project. This is a mobile app which helps the users to schedule their daily events.\n"
+
+      ;
+
+    });
+
   }
 }
 

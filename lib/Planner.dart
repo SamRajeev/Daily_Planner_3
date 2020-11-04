@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:dailyplanner2_5/main.dart';
 
 
 
@@ -21,7 +23,7 @@ class _PlannerState extends State<Planner> {
   List<Meeting> meetings;
   SharedPreferences prefs;
   List<List> meetings2;
-  String HelpText = " ";
+  String helpText = " ";
 //  String _text;
 //  String _titleText;
 
@@ -121,11 +123,15 @@ class _PlannerState extends State<Planner> {
                   title: Text("Help",style: TextStyle(
                     fontSize: 15.0
                   ),),
-                  onTap: (){HelpTextContent();},
+                  onTap: (){helpTextContent();},
                 ),
-                Text(HelpText,style: TextStyle(
-                  fontSize: 15.0
-                ),)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(helpText,style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold
+                  ),),
+                )
 
               ],
             ),
@@ -144,71 +150,6 @@ class _PlannerState extends State<Planner> {
 
 
   }
-//  void calendarTapped(CalendarTapDetails details) {
-//    if (details.targetElement == CalendarElement.header) {
-//      _text = DateFormat('MMMM yyyy')
-//          .format(details.date)
-//          .toString();
-//      _titleText='Header';
-//    }
-//    else if (details.targetElement == CalendarElement.viewHeader) {
-//      _text = DateFormat('EEEE dd, MMMM yyyy')
-//          .format(details.date)
-//          .toString();
-//      _titleText='View Header';
-//    }
-//    else if (details.targetElement == CalendarElement.calendarCell) {
-//      _text = DateFormat('EEEE dd, MMMM yyyy')
-//          .format(details.date)
-//          .toString();
-//      _titleText='Time slots';
-//    }
-//    else if (details.targetElement == CalendarElement.appointment) {
-//      _text = details.resource.toString();
-//      print(_text);
-//      _titleText='Rename';
-//
-//      showDialog(
-//          context: context,
-//          builder: (BuildContext context) {
-//            return AlertDialog(
-//              title: Text('Rename'),
-//              content: TextField(
-//                controller: _renameController,
-//                autofocus: true,
-//              ),
-//              actions: <Widget>[
-//                FlatButton(
-//                  child: Text('Cancel'),
-//                  onPressed: (){Navigator.pop(context);}
-//                ),
-//                FlatButton(
-//                  child: Text('Save'),
-//                  onPressed: (){
-////                    for(var index = 0 ;index < meetings.length;index++){
-////                      meetings[index].
-//                    //}
-//                  },
-//                )
-//              ],
-//            );
-//          });
-//    }
-//    showDialog(
-//        context: context,
-//        builder: (BuildContext context) {
-//          return AlertDialog(
-//            title:Container(child: new Text(" $_titleText")),
-//            content:Container(child: new Text(" $_text")),
-//            actions: <Widget>[
-//              new FlatButton(onPressed: (){
-//                Navigator.of(context).pop();
-//              }, child: new Text('close'))
-//            ],
-//          );
-//        });
-//  }
-
   eventAdder() async{
     await showDialog(
         context:context,
@@ -243,6 +184,7 @@ class _PlannerState extends State<Planner> {
                 setState((){
                   final DateTime startTime = _calendarController.selectedDate;
                   final DateTime endTime = startTime.add(const Duration(hours: 1));
+                  scheduleEvent(startTime, meetingName);
                   meetings.add(Meeting(meetingName, startTime, endTime, const Color(0xFF0F8644), false));
                   inputdatabase();
                   prefs.setString('events',jsonEncode(meetings2));
@@ -256,14 +198,39 @@ class _PlannerState extends State<Planner> {
       );
     }
 
-  void HelpTextContent() {
+  void helpTextContent() {
     setState(() {
-      HelpText = "Thank you for using help\n"
-          "So all you have to do is Schedule your event.\n\n 1. Just click on the specific time\n\n"
-          " 2. Then click on the add button and \n enter your event's name\n\n 3. Save it";
+      helpText = "To schedule your event follow the given steps:\n\n 1. Just select the specific time slot.\n\n"
+          " 2. Then click on the add button and \n enter your event's name.\n\n 3. Save it.\n\n\n""Thanks for using help.\n";
     });
   }
+  void scheduleEvent(DateTime startTime,meetingName)async{
+    var scheduledNotificationDateTime = startTime;
+
+    var androidPlatformSpecifics = AndroidNotificationDetails(
+        '0',
+        meetingName,
+        'Reminder',
+        icon: 'app_icon',
+        largeIcon: DrawableResourceAndroidBitmap('app_icon.jpg')
+    );
+    var iosPlatformSpecifics =  IOSNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      //presentSound: true,
+    );
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformSpecifics,iosPlatformSpecifics
+    );
+    int id = DateTime.now().millisecondsSinceEpoch.toUnsigned(31);
+    print(id);
+
+    await flutterLocalNotificationsPlugin.schedule(id, 'Reminder', meetingName, scheduledNotificationDateTime, platformChannelSpecifics);
+
+
   }
+}
+
 
 
 
